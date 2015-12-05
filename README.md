@@ -13,206 +13,85 @@ Here is the work I have done to do the testing of JSON schemas.
 First I will find a good structured JSON, I used the JSON returned by the API of [openweathermap.org](http://api.openweathermap.org/). You can see example output in file [rawJSON.json](rawJSON.json). It is the output from a request [http://api.openweathermap.org/data/2.5/weather?q=London,uk&appid=2de143494c0b295cca9337e1e96b00e0](http://api.openweathermap.org/data/2.5/weather?q=London,uk&appid=2de143494c0b295cca9337e1e96b00e0).
 
 ### Generate a JSON schema
-Next I wanted to generate a JSON schema for the data. I used online JSON generator [http://jsonschema.net](http://jsonschema.net/#/) where I pasted my JSON and added an URL to it (`http://api.openweathermap.org`). Pressing the "Generate Schema" lead to the output:
+Next I wanted to generate a JSON schema for the data. I wanted to use the online JSON generator [http://jsonschema.net](http://jsonschema.net/#/), however such _generic json schemas_ is not yet supported in `dreamjs`. So I wrote my own simple [schema generator](generateSchema.js).
 
+It simply iterates a test JSON object and returns property **name** and **type**. If the value of a property is an _object_ it drills down to convert the object to a schema.
+
+Example of generated schema:
 ```
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://api.openweathermap.org",
-  "type": "object",
-  "properties": {
-    "coord": {
-      "id": "http://api.openweathermap.org/coord",
-      "type": "object",
-      "properties": {
-        "lon": {
-          "id": "http://api.openweathermap.org/coord/lon",
-          "type": "number",
-          "default": -0.13
-        },
-        "lat": {
-          "id": "http://api.openweathermap.org/coord/lat",
-          "type": "number",
-          "default": 51.51
-        }
-      },
-      "required": [
-        "lon",
-        "lat"
-      ]
-    },
-    "weather": {
-      "id": "http://api.openweathermap.org/weather",
-      "type": "array",
-      "items": {
-        "id": "http://api.openweathermap.org/weather/0",
-        "type": "object",
-        "properties": {
-          "id": {
-            "id": "http://api.openweathermap.org/weather/0/id",
-            "type": "integer",
-            "default": 802
-          },
-          "main": {
-            "id": "http://api.openweathermap.org/weather/0/main",
-            "type": "string",
-            "default": "Clouds"
-          },
-          "description": {
-            "id": "http://api.openweathermap.org/weather/0/description",
-            "type": "string",
-            "default": "scattered clouds"
-          },
-          "icon": {
-            "id": "http://api.openweathermap.org/weather/0/icon",
-            "type": "string",
-            "default": "03d"
-          }
-        }
-      }
-    },
-    "base": {
-      "id": "http://api.openweathermap.org/base",
-      "type": "string",
-      "default": "cmc stations"
-    },
-    "main": {
-      "id": "http://api.openweathermap.org/main",
-      "type": "object",
-      "properties": {
-        "temp": {
-          "id": "http://api.openweathermap.org/main/temp",
-          "type": "number",
-          "default": 284.4
-        },
-        "pressure": {
-          "id": "http://api.openweathermap.org/main/pressure",
-          "type": "integer",
-          "default": 1020
-        },
-        "humidity": {
-          "id": "http://api.openweathermap.org/main/humidity",
-          "type": "integer",
-          "default": 71
-        },
-        "temp_min": {
-          "id": "http://api.openweathermap.org/main/temp_min",
-          "type": "number",
-          "default": 283.15
-        },
-        "temp_max": {
-          "id": "http://api.openweathermap.org/main/temp_max",
-          "type": "number",
-          "default": 285.15
-        }
-      }
-    },
-    "wind": {
-      "id": "http://api.openweathermap.org/wind",
-      "type": "object",
-      "properties": {
-        "speed": {
-          "id": "http://api.openweathermap.org/wind/speed",
-          "type": "number",
-          "default": 10.8
-        },
-        "deg": {
-          "id": "http://api.openweathermap.org/wind/deg",
-          "type": "integer",
-          "default": 220
-        },
-        "gust": {
-          "id": "http://api.openweathermap.org/wind/gust",
-          "type": "number",
-          "default": 15.9
-        }
-      }
-    },
-    "clouds": {
-      "id": "http://api.openweathermap.org/clouds",
-      "type": "object",
-      "properties": {
-        "all": {
-          "id": "http://api.openweathermap.org/clouds/all",
-          "type": "integer",
-          "default": 40
-        }
-      }
-    },
-    "dt": {
-      "id": "http://api.openweathermap.org/dt",
-      "type": "integer",
-      "default": 1449303600
-    },
-    "sys": {
-      "id": "http://api.openweathermap.org/sys",
-      "type": "object",
-      "properties": {
-        "type": {
-          "id": "http://api.openweathermap.org/sys/type",
-          "type": "integer",
-          "default": 1
-        },
-        "id": {
-          "id": "http://api.openweathermap.org/sys/id",
-          "type": "integer",
-          "default": 5093
-        },
-        "message": {
-          "id": "http://api.openweathermap.org/sys/message",
-          "type": "number",
-          "default": 0.0081
-        },
-        "country": {
-          "id": "http://api.openweathermap.org/sys/country",
-          "type": "string",
-          "default": "GB"
-        },
-        "sunrise": {
-          "id": "http://api.openweathermap.org/sys/sunrise",
-          "type": "integer",
-          "default": 1449301749
-        },
-        "sunset": {
-          "id": "http://api.openweathermap.org/sys/sunset",
-          "type": "integer",
-          "default": 1449330774
-        }
-      }
-    },
-    "id": {
-      "id": "http://api.openweathermap.org/id",
-      "type": "integer",
-      "default": 2643743
-    },
-    "name": {
-      "id": "http://api.openweathermap.org/name",
-      "type": "string",
-      "default": "London"
-    },
-    "cod": {
-      "id": "http://api.openweathermap.org/cod",
-      "type": "integer",
-      "default": 200
+  "coord": {
+    "lon": "number",
+    "lat": "number"
+  },
+  "weather": {
+    "0": {
+      "id": "number",
+      "main": "string",
+      "description": "string",
+      "icon": "string"
     }
   },
-  "required": [
-    "coord",
-    "weather",
-    "base",
-    "main",
-    "wind",
-    "clouds",
-    "dt",
-    "sys",
-    "id",
-    "name",
-    "cod"
-  ]
+  "base": "string",
+  "main": {
+    "temp": "number",
+    "pressure": "number",
+    "humidity": "number",
+    "temp_min": "number",
+    "temp_max": "number"
+  },
+  "wind": {
+    "speed": "number",
+    "deg": "number",
+    "gust": "number"
+  },
+  "clouds": {
+    "all": "number"
+  },
+  "dt": "number",
+  "sys": {
+    "type": "number",
+    "id": "number",
+    "message": "number",
+    "country": "string",
+    "sunrise": "number",
+    "sunset": "number"
+  },
+  "id": "number",
+  "name": "string",
+  "cod": "number"
 }
 ```
 
-I changed the default setting to include _default values_. You may see the minified JSON Schema in the file [openweathermap.org.json](openweathermap.org.json).
+### Prepare folder for NPM and GIT
+Installing components (packages) in Node.js is as easy as opening a terminal and then type a command. However first I need to initialize the folder with `npm init`.
+
+The package have been initialized and I have also added this GIT repository, and pushed the files up on [github](https://github.com/netsi1964/json-schema-test).
 
 ### Install the dreamjs node package
-Installing components (packages) in Node.js is as easy as opening a terminal and then type a command. However first I need to initialize the folder with `npm init`.
+I will now install dreamjs using:
+
+> `npm install dreamjs --save`
+
+That command will download and install the `dreamjs` package including any dependencies. They will be placed in the "`mode_modules`" by NPM.
+
+### Generating the first test data using dreamjs.
+We are now ready to test the generation of test data for the openweather schema. We need to create a node.js javascript file to do that. I create [generate-testdata.js](generate-testdata.js):
+
+```
+var fs = require("fs");
+var dream = require("dreamjs");
+var generateSchema = require("./generateSchema.js");
+
+var exampleData = fs.readFileSync('openweathermap.org.json').toString();
+exampleData = JSON.parse(exampleData);
+
+dream.schema('openweathermap', generateSchema.generateSchema(exampleData));
+
+var generatedData = dream
+  .useSchema('openweathermap')
+  .generateRnd(3)
+  .output();
+
+console.log(generatedData);
+```
