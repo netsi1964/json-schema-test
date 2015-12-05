@@ -1,0 +1,17 @@
+{
+  "name": "json-schema-test",
+  "version": "1.0.0",
+  "description": "Description where I try various JSON schema related stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "json",
+    "json",
+    "schema",
+    "dream.js"
+  ],
+  "author": "Sten Hougaard <netsi1964@gmail.com> (http://www.netsi.dk/wordpress)",
+  "license": "ISC"
+}
